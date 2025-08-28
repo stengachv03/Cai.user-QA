@@ -9,8 +9,8 @@ if not TOKEN:
     raise ValueError("No BOT_TOKEN environment variable set")
 
 # Replace with actual chat IDs
-ADMIN_CHAT_ID = 123456789  # Chat ID for @sten_anyqx
-CREATOR_CHAT_ID = 987654321  # Chat ID for @vl_std
+ADMIN_CHAT_ID = 1075685605  # Chat ID for @sten_anyqx
+CREATOR_CHAT_ID = 897127957  # Chat ID for @vl_std
 
 WALLET_ADDRESS = 'TVkXgDHJsMQcR14Mr6uPdpELqJuG6Aok5L'
 NETWORK = 'TRC20'
@@ -224,3 +224,4 @@ if __name__ == '__main__':
     WEBHOOK_URL = f"https://cai-user-qa-1.onrender.com/{TOKEN}"
     bot.set_webhook(url=WEBHOOK_URL)
     server.run(host='0.0.0.0', port=port)
+
