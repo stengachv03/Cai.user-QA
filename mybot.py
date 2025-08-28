@@ -220,7 +220,7 @@ def health_check():
     return 'Service is running', 200
 
 if __name__ == '__main__':
+    port = int(os.getenv('PORT'))
     WEBHOOK_URL = f"https://cai-user-qa-1.onrender.com/{TOKEN}"
     bot.set_webhook(url=WEBHOOK_URL)
-    server.run(host='0.0.0.0', port=int(os.getenv('PORT', 5000)))
-
+    server.run(host='0.0.0.0', port=port)
