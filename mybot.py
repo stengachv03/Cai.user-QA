@@ -1,19 +1,21 @@
 import os
 import telebot
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
+from flask import Flask, request
 
 TOKEN = os.getenv('BOT_TOKEN')
 if not TOKEN:
     raise ValueError("No BOT_TOKEN environment variable set")
 
 # Replace with actual chat IDs
-ADMIN_CHAT_ID = 123456789  # Chat ID for @sten_anyqx (get it by sending a message to the bot and checking update)
-CREATOR_CHAT_ID = 987654321  # Chat ID for @vl_std (same as above)
+ADMIN_CHAT_ID = 123456789  # Chat ID for @sten_anyqx
+CREATOR_CHAT_ID = 987654321  # Chat ID for @vl_std
 
 WALLET_ADDRESS = 'TVkXgDHJsMQcR14Mr6uPdpELqJuG6Aok5L'
 NETWORK = 'TRC20'
 
 bot = telebot.TeleBot(TOKEN)
+server = Flask(__name__)
 
 # Dictionary to track user states
 user_states = {}
@@ -66,25 +68,28 @@ def handle_order_ad(call):
     greeting = "Здравствуйте! Мы рады сотрудничать с Вами. Слушаем внимательно Ваше предложение."
     bot.send_message(call.message.chat.id, greeting)
     
-    # Set state to wait for proposal
     user_states[call.from_user.id] = 'waiting_proposal'
 
 @bot.message_handler(func=lambda message: True)
 def handle_message(message):
     user_id = message.from_user.id
     if user_id in user_states and user_states[user_id] == 'waiting_proposal':
-        # Forward to creator
         bot.forward_message(CREATOR_CHAT_ID, message.chat.id, message.message_id)
         bot.send_message(message.chat.id, "Ваше предложение передано. Мы свяжемся с вами!")
         del user_states[user_id]
     elif message.text not in ["Сотрудничество", "Поддержать"]:
-        # Forward to admin
         bot.forward_message(ADMIN_CHAT_ID, message.chat.id, message.message_id)
         bot.send_message(message.chat.id, "Спасибо! Ваша идея передана. Отвечу, если админ захочет ответить.")
 
+@server.route('/' + TOKEN, methods=['POST'])
+def webhook():
+    json_string = request.get_data().decode('utf-8')
+    update = telebot.types.Update.de_json(json_string)
+    bot.process_new_updates([update])
+    return 'OK', 200
+
 if __name__ == '__main__':
-    try:
-        bot.polling(none_stop=True)
-    except Exception as e:
-        print(f"Error: {e}")
-        raise
+    # Set webhook (replace with your Render URL)
+    WEBHOOK_URL = f"https://your-render-app.onrender.com/{TOKEN}"
+    bot.set_webhook(url=WEBHOOK_URL)
+    server.run(host='0.0.0.0', port=int(os.getenv('PORT', 5000)))
