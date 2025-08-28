@@ -88,8 +88,11 @@ def webhook():
     bot.process_new_updates([update])
     return 'OK', 200
 
+@server.route('/')
+def health_check():
+    return 'Service is running', 200
+
 if __name__ == '__main__':
-    # Set webhook (replace with your Render URL)
-    WEBHOOK_URL = f"https://your-render-app.onrender.com/{TOKEN}"
+    WEBHOOK_URL = f"https://cai-user-qa-1.onrender.com/{TOKEN}"
     bot.set_webhook(url=WEBHOOK_URL)
     server.run(host='0.0.0.0', port=int(os.getenv('PORT', 5000)))
