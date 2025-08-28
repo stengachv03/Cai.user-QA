@@ -1,1 +1,1 @@
-web: pip install -r requirements.txt && python mybot.py
+web: python mybot.py
